@@ -27,4 +27,4 @@ dist/
 
 # project dirs
 /datasets
-/models
+#/models
