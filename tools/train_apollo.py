@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/workspace/bev_lane_det')# 添加模块搜索路径
+sys.path.append('/home/houzm/houzm/02_code/bev_lane_det-in-ex')# 添加模块搜索路径
 import torch
 from torch.optim.lr_scheduler import CosineAnnealingLR # 导入余弦退火学习率调度器
 from torch.utils.data import DataLoader  # 导入数据加载器
@@ -10,6 +10,8 @@ from models.loss import IoULoss, NDPushPullLoss  # 导入自定义的损失函�
 from utils.config_util import load_config_module # 导入加载配置文件的函数
 from sklearn.metrics import f1_score # 导入F1分数计算函数
 import numpy as np
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "6,7"
 
 # 定义一个继承自nn.Module的类，将模型和损失函数组合在一起
 class Combine_Model_and_Loss(torch.nn.Module):
@@ -140,4 +142,4 @@ def worker_function(config_file, gpu_id, checkpoint_path=None):
 if __name__ == '__main__':
     import warnings
     warnings.filterwarnings("ignore")
-    worker_function('./tools/apollo_config.py', gpu_id=[0,1])  # 调用worker_function函数，传入配置文件路径和GPU编号
+    worker_function('/home/houzm/houzm/02_code/bev_lane_det-in-ex/tools/apollo_config.py', gpu_id=[6,7])  # 调用worker_function函数，传入配置文件路径和GPU编号

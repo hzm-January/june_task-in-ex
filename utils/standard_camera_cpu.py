@@ -22,13 +22,13 @@ class Standard_camera:
         :param cameraB_distortion: distortion parameters of current camera
         :param imageB_shape: image shape of current camera
         '''
-        ''' cameraA parameter '''
+        ''' cameraA parameter  Virtual camera'''
         self.cameraA_intrinsic = cameraA_intrinsic
         self.cameraA2ego_matrix = cameraA2ego_matrix
         self.cameraA_distortion = cameraA_distortion
         self.imageA_shape = imageA_shape
 
-        ''' cameraB parameter '''
+        ''' cameraB parameter  current camera'''
         self.cameraB_intrinsic = cameraB_intrinsic
         self.cameraB2ego_matrix = cameraB2ego_matrix
         self.cameraB_distortion = cameraB_distortion
@@ -51,10 +51,16 @@ class Standard_camera:
         return imageB_in_A
 
     def get_matrix(self, height=0):
-        u1, u2 = int(0.6 * self.imageB_shape[0]), int(0.8 * self.imageB_shape[0])
-        v1, v2 = int(0.33 * self.imageB_shape[1]), int(0.66 * self.imageB_shape[1])
-        base_points = np.array([(u1, v1, 1), (u1, v2, 1), (u2, v1, 1), (u2, v2, 1)])
-        res = self.get_project_matrix(base_points, height)
+        # u1, u2 = int(0.6 * self.imageB_shape[0]), int(0.8 * self.imageB_shape[0])
+        # v1, v2 = int(0.33 * self.imageB_shape[1]), int(0.66 * self.imageB_shape[1])
+        # base_points = np.array([(u1, v1, 1), (u1, v2, 1), (u2, v1, 1), (u2, v2, 1)])
+        # res = self.get_project_matrix(base_points, height)
+        # res = self.cameraA_intrinsic @ self.cameraA2ego_matrix[:3, :] @\
+        #       np.linalg.inv(self.cameraB2ego_matrix)[:3, :] @ np.linalg.inv(self.cameraB_intrinsic)
+        res_1 = np.dot(self.cameraA_intrinsic, self.cameraA2ego_matrix[:3, :])
+        res_2 = np.linalg.pinv(np.dot(self.cameraB_intrinsic, self.cameraB2ego_matrix[:3, :]))
+        res = np.dot(res_1, res_2)
+        res /= res[2][2]
         return res
     # 根据当前相机图像和虚拟相机参数，计算将当前相机图像投影到虚拟相机视角下的投影矩阵。
     def get_project_matrix(self, base_points, height=0):
